@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"io/ioutil"
 
 	"github.com/spf13/cobra"
 )
@@ -31,10 +32,14 @@ var checkSpellCmd = &cobra.Command{
 		resp, err := http.PostForm("https://speller.cs.pusan.ac.kr/results",
 			url.Values{"text1": {args[0]}})
 		if err != nil {
-			fmt.Println("error raised")
-		} else {
-			fmt.Println(resp.Body)
+			panic(err)
 		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(string(body))
 	},
 }
 
