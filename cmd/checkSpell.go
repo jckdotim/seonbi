@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"net/url"
 	"io/ioutil"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -39,7 +40,9 @@ var checkSpellCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(string(body))
+		if !strings.Contains(string(body), "맞춤법과 문법 오류를 찾지") {
+			fmt.Println(string(body))
+		}
 	},
 }
 
