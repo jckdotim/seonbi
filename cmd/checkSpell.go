@@ -20,6 +20,7 @@ import (
 	"net/url"
 	"io/ioutil"
 	"strings"
+	"regexp"
 
 	"github.com/spf13/cobra"
 )
@@ -41,7 +42,9 @@ var checkSpellCmd = &cobra.Command{
 			panic(err)
 		}
 		if !strings.Contains(string(body), "맞춤법과 문법 오류를 찾지") {
-			fmt.Println(string(body))
+			re := regexp.MustCompile(`data = (\[[^;].*\]);`)
+			match := re.FindStringSubmatch(string(body))
+			fmt.Println(match[1])
 		}
 	},
 }
