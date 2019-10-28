@@ -21,8 +21,10 @@ import (
 	"io/ioutil"
 	"strings"
 	"regexp"
+	"encoding/json"
 
 	"github.com/spf13/cobra"
+	"github.com/TylerBrock/colorjson"
 )
 
 // checkSpellCmd represents the checkSpell command
@@ -31,7 +33,7 @@ var checkSpellCmd = &cobra.Command{
 	Short: "Check given Korean's spell",
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		resp, err := http.PostForm("https://speller.cs.pusan.ac.kr/results",
+		resp, err := http.PostForm("http://speller.cs.pusan.ac.kr/results",
 			url.Values{"text1": {args[0]}})
 		if err != nil {
 			panic(err)
@@ -44,7 +46,11 @@ var checkSpellCmd = &cobra.Command{
 		if !strings.Contains(string(body), "맞춤법과 문법 오류를 찾지") {
 			re := regexp.MustCompile(`data = (\[[^;].*\]);`)
 			match := re.FindStringSubmatch(string(body))
-			fmt.Println(match[1])
+			var obj map[string]interface{}
+			json.Unmarshal([]byte(string(match[1])), &obj)
+			result, _ := colorjson.Marshal(obj)
+			fmt.Println(string(match[1]))
+			fmt.Println(string(result))
 		}
 	},
 }
