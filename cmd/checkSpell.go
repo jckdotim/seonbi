@@ -44,12 +44,13 @@ var checkSpellCmd = &cobra.Command{
 			panic(err)
 		}
 		if !strings.Contains(string(body), "맞춤법과 문법 오류를 찾지") {
-			re := regexp.MustCompile(`data = (\[[^;].*\]);`)
+			re := regexp.MustCompile(`data = \[([^;].*)\];`)
 			match := re.FindStringSubmatch(string(body))
 			var obj map[string]interface{}
 			json.Unmarshal([]byte(string(match[1])), &obj)
-			result, _ := colorjson.Marshal(obj)
-			fmt.Println(string(match[1]))
+			f := colorjson.NewFormatter()
+			f.Indent = 2
+			result, _ := f.Marshal(obj)
 			fmt.Println(string(result))
 		}
 	},
